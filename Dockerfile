@@ -6,11 +6,13 @@ COPY install.txt /tmp/install.txt
 # Install dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     zip unzip curl git libzip-dev sudo \
-    libpng-dev libjpeg-dev libfreetype6-dev \
+    libpng-dev libjpeg-dev libfreetype6-dev libwebp-dev \
     $(cat /tmp/install.txt | tr '\n' ' ') \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install zip pdo pdo_mysql gd opcache \
     && rm -rf /var/lib/apt/lists/*
+
+RUN echo "output_buffering = 4096" > /usr/local/etc/php/conf.d/output-buffering.ini
 
 # Enable Apache modules
 RUN a2enmod rewrite
